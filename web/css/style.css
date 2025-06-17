@@ -1,0 +1,92 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa; /* Cor de fundo mais suave */
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #0056b3;
+    margin-bottom: 20px; /* Espaçamento abaixo do título */
+}
+
+header {
+    background-color: #0056b3; /* Cor de fundo do cabeçalho */
+    padding: 10px 0; /* Espaçamento interno do cabeçalho */
+}
+
+nav ul {
+    list-style-type: none; /* Remove os marcadores da lista */
+    padding: 0; /* Remove o preenchimento padrão */
+    text-align: center; /* Centraliza o texto */
+}
+
+nav ul li {
+    display: inline; /* Exibe os itens da lista em linha */
+    margin: 0 15px; /* Espaçamento entre os itens do menu */
+}
+
+nav ul li a {
+    color: white; /* Cor do texto do link */
+    text-decoration: none; /* Remove o sublinhado dos links */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
+nav ul li a:hover {
+    text-decoration: underline; /* Sublinha o link ao passar o mouse */
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Permite que as colunas se movam para a próxima linha em telas menores */
+    margin-top: 20px; /* Espaçamento acima do container */
+}
+
+.coluna {
+    width: 30%;
+    border: 1px solid #0056b3;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffffff; /* Cor de fundo das colunas */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+    margin-bottom: 20px; /* Espaçamento abaixo das colunas */
+}
+
+.tarefa {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Cor de fundo das tarefas */
+}
+
+button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+}
+
+button:hover {
+    background-color: #003d80;
+}
+
+input[type="text"], input[type="email"], select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Inclui o preenchimento e a borda na largura total */
+}
+
+#mensagem {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center; /* Centraliza a mensagem */
+}

@@ -1,0 +1,19 @@
+{
+    "usuarios": [
+    {
+      "id": 1,
+      "nome": "Lizzie",
+      "email": "lizzie@email.com"
+    }
+  ],
+  "tarefas": [
+    {
+      "id": 1,
+      "descricao": "Estudar JavaScript",
+      "nome_setor": "TI",
+      "prioridade": "Alta",
+      "usuario_nome": "Lizzie",
+      "status": "A_FAZER"
+    }
+  ]
+}

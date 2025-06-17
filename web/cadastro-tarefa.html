@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Tarefa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="cadastro-usuario.html">Cadastro de Usuário</a></li>
+                <li><a href="cadastro-tarefa.html">Cadastro de Tarefa</a></li>
+                <li><a href="index.html">Gerenciamento de Tarefas</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1>Cadastro de Tarefa</h1>
+    <form id="formTarefa">
+        <label for="usuario">Usuário:</label>
+        <select id="usuario" required></select>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" required>
+
+        <label for="nome_setor">Nome do Setor:</label>
+        <input type="text" id="nome_setor" required>
+
+        <label for="prioridade">Prioridade:</label>
+        <select id="prioridade" required>
+            <option value="BAIXA">Baixa</option>
+            <option value="MEDIA">Média</option>
+            <option value="ALTA">Alta</option>
+        </select>
+
+        <label for="status">Status:</label>
+        <select id="status" required>
+            <option value="A_FAZER">A Fazer</option>
+            <option value="FAZENDO">Fazendo</option>
+            <option value="PRONTO">Pronto</option>
+        </select>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p id="mensagem"></p>
+
+    <script>
+        async function salvarTarefa(tarefa) {
+            const response = await fetch('http://localhost:3000/tarefas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(tarefa)
+            });
+            if (!response.ok) {
+                const erro = await response.text();
+                throw new Error('Erro ao cadastrar tarefa: ' + erro);
+            }
+        }
+
+        document.getElementById('formTarefa').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const usuarioSelect = document.getElementById('usuario');
+            if (usuarioSelect.disabled || usuarioSelect.value === '') {
+                mostrarMensagem('mensagem', 'Cadastre um usuário antes de criar tarefas.', true);
+                return;
+            }
+            const descricao = document.getElementById('descricao').value.trim();
+            const nome_setor = document.getElementById('nome_setor').value.trim();
+            const prioridade = document.getElementById('prioridade').value;
+            const usuario = usuarioSelect.options[usuarioSelect.selectedIndex].text;
+            const status = document.getElementById('status').value;
+
+            if (!descricao || !nome_setor || !prioridade || !usuario || !status) {
+                mostrarMensagem('mensagem', 'Preencha todos os campos.', true);
+                return;
+            }
+
+            const tarefa = {
+                descricao,
+                nome_setor,
+                prioridade,
+                usuario, // Corrigido aqui!
+                status
+            };
+            console.log('Enviando tarefa:', tarefa); // Para depuração
+            try {
+                await salvarTarefa(tarefa);
+                mostrarMensagem('mensagem', 'Tarefa cadastrada com sucesso!');
+                e.target.reset();
+            } catch (error) {
+                mostrarMensagem('mensagem', error.message, true);
+            }
+        });
+
+        async function carregarUsuarios() {
+            try {
+                const response = await fetch('http://localhost:3000/usuarios');
+                const usuarios = await response.json();
+                const select = document.getElementById('usuario');
+                select.innerHTML = '';
+                if (!usuarios || usuarios.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.innerText = 'Nenhum usuário cadastrado';
+                    select.appendChild(option);
+                    select.disabled = true;
+                } else {
+                    select.disabled = false;
+                    usuarios.forEach((u) => {
+                        const option = document.createElement('option');
+                        option.value = u.id;
+                        option.innerText = u.nome;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                mostrarMensagem('mensagem', 'Erro ao carregar usuários.', true);
+            }
+        }
+
+        window.onload = carregarUsuarios;
+
+        function mostrarMensagem(id, mensagem, erro = false) {
+            const el = document.getElementById(id);
+            el.textContent = mensagem;
+            el.style.color = erro ? 'red' : 'green';
+        }
+    </script>
+</body>
+</html>     

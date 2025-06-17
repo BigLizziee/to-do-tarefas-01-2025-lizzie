@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Tarefas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="cadastro-usuario.html">Cadastro de Usuário</a></li>
+                <li><a href="cadastro-tarefa.html">Cadastro de Tarefa</a></li>
+                <li><a href="index.html">Gerenciamento de Tarefas</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1>Gerenciamento de Tarefas</h1>
+    <div class="container">
+        <div class="coluna" id="aFazer">
+            <h2>A Fazer</h2>
+            <div id="tarefasAFazer"></div>
+        </div>
+        <div class="coluna" id="fazendo">
+            <h2>Fazendo</h2>
+            <div id="tarefasFazendo"></div>
+        </div>
+        <div class="coluna" id="pronto">
+            <h2>Pronto</h2>
+            <div id="tarefasPronto"></div>
+        </div>
+    </div>
+
+    <script>
+        async function carregarTarefas() {
+            try {
+                const response = await fetch('http://localhost:3000/tarefas');
+                const tarefas = await response.json();
+
+                ['tarefasAFazer', 'tarefasFazendo', 'tarefasPronto'].forEach(id => {
+                    document.getElementById(id).innerHTML = '';
+                });
+
+                tarefas.forEach(tarefa => {
+                    const div = document.createElement('div');
+                    div.className = 'tarefa';
+                    div.innerHTML = `
+                        <p><strong>Descrição:</strong> ${tarefa.descricao}</p>
+                        <p><strong>Setor:</strong> ${tarefa.nome_setor || ''}</p>
+                        <p><strong>Prioridade:</strong> ${tarefa.prioridade}</p>
+                        <p><strong>Usuário:</strong> ${tarefa.usuario_nome}</p>
+                        <p><strong>Status:</strong> ${tarefa.status.replace('_',' ').toLowerCase()}</p>
+                        <button onclick="editarTarefa(${tarefa.id})">Editar</button>
+                        <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
+                        <select onchange="atualizarStatus(${tarefa.id}, this.value)" value="${tarefa.status}">
+                            <option value="A_FAZER" ${tarefa.status === 'A_FAZER' ? 'selected' : ''}>A Fazer</option>
+                            <option value="FAZENDO" ${tarefa.status === 'FAZENDO' ? 'selected' : ''}>Fazendo</option>
+                            <option value="PRONTO" ${tarefa.status === 'PRONTO' ? 'selected' : ''}>Pronto</option>
+                        </select>
+                    `;
+                    const containerId = tarefa.status === 'A_FAZER' ? 'tarefasAFazer' : (tarefa.status === 'FAZENDO' ? 'tarefasFazendo' : 'tarefasPronto');
+                    document.getElementById(containerId).appendChild(div);
+                });
+
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function editarTarefa(id) {
+            window.location.href = `cadastro-tarefa.html?id=${id}`;
+        }
+
+        async function excluirTarefa(id) {
+            if(confirm("Confirmar exclusão da tarefa?")) {
+                try {
+                    const response = await fetch(`http://localhost:3000/tarefas/${id}`, { method: 'DELETE' });
+                    if(!response.ok) throw new Error('Erro ao excluir tarefa');
+                    carregarTarefas();
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        }
+
+        async function atualizarStatus(id, status) {
+            try {
+                const response = await fetch(`http://localhost:3000/tarefas/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status }),
+                });
+                if(!response.ok) throw new Error('Erro ao atualizar status');
+                carregarTarefas();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        window.onload = carregarTarefas;
+    </script>
+</body>
+</html>
