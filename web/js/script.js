@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000/api'; // Ajuste conforme necessário
+const API_BASE = 'http://localhost:3000/api'; 
 
 function mostrarMensagem(idElemento, texto, erro = false) {
     const elemento = document.getElementById(idElemento);

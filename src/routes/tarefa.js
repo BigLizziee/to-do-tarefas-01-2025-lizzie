@@ -2,26 +2,24 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Cadastrar tarefa
 router.post('/', (req, res) => {
     const { descricao, status, prioridade, usuario_id, nome_setor } = req.body;
     if (!descricao || !status || !usuario_id) {
         return res.status(400).json({ mensagem: 'Descrição, status e usuário são obrigatórios.' });
     }
-   db.query(
-    'INSERT INTO tarefas (descricao, status, prioridade, usuario_id, nome_setor) VALUES (?, ?, ?, ?, ?)',
-    [descricao, status, prioridade, usuario_id, nome_setor],
-    (err, results) => {
-        if (err) {
-            console.error('Erro ao cadastrar tarefa:', err); // <-- Veja o terminal!
-            return res.status(500).json({ mensagem: 'Erro ao cadastrar tarefa.' });
+    db.query(
+        'INSERT INTO tarefas (descricao, status, prioridade, usuario_id, nome_setor) VALUES (?, ?, ?, ?, ?)',
+        [descricao, status, prioridade, usuario_id, nome_setor],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao cadastrar tarefa:', err);
+                return res.status(500).json({ mensagem: 'Erro ao cadastrar tarefa.' });
+            }
+            res.status(201).json({ mensagem: 'Tarefa cadastrada com sucesso!', id: results.insertId });
         }
-        res.status(201).json({ mensagem: 'Tarefa cadastrada com sucesso!', id: results.insertId });
-    }
-);
+    );
 });
 
-// Listar tarefas com dados do usuário
 router.get('/', (req, res) => {
     const sql = `
         SELECT 
@@ -45,7 +43,6 @@ router.get('/', (req, res) => {
     });
 });
 
-// Atualizar tarefa
 router.patch('/:id', (req, res) => {
     const { descricao, status, prioridade, usuario_id, nome_setor } = req.body;
     db.query(
@@ -60,7 +57,6 @@ router.patch('/:id', (req, res) => {
     );
 });
 
-// Excluir tarefa
 router.delete('/:id', (req, res) => {
     db.query(
         'DELETE FROM tarefas WHERE id=?',
@@ -73,6 +69,5 @@ router.delete('/:id', (req, res) => {
         }
     );
 });
-
 
 module.exports = router;
