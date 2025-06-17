@@ -45,87 +45,87 @@
     </form>
     <p id="mensagem"></p>
 
-    <script>
-        async function salvarTarefa(tarefa) {
-            const response = await fetch('http://localhost:3000/tarefas', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tarefa)
-            });
-            if (!response.ok) {
-                const erro = await response.text();
-                throw new Error('Erro ao cadastrar tarefa: ' + erro);
-            }
-        }
-
-        document.getElementById('formTarefa').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const usuarioSelect = document.getElementById('usuario');
-            if (usuarioSelect.disabled || usuarioSelect.value === '') {
-                mostrarMensagem('mensagem', 'Cadastre um usuário antes de criar tarefas.', true);
-                return;
-            }
-            const descricao = document.getElementById('descricao').value.trim();
-            const nome_setor = document.getElementById('nome_setor').value.trim();
-            const prioridade = document.getElementById('prioridade').value;
-            const usuario = usuarioSelect.options[usuarioSelect.selectedIndex].text;
-            const status = document.getElementById('status').value;
-
-            if (!descricao || !nome_setor || !prioridade || !usuario || !status) {
-                mostrarMensagem('mensagem', 'Preencha todos os campos.', true);
-                return;
-            }
-
-            const tarefa = {
-                descricao,
-                nome_setor,
-                prioridade,
-                usuario, // Corrigido aqui!
-                status
-            };
-            console.log('Enviando tarefa:', tarefa); // Para depuração
-            try {
-                await salvarTarefa(tarefa);
-                mostrarMensagem('mensagem', 'Tarefa cadastrada com sucesso!');
-                e.target.reset();
-            } catch (error) {
-                mostrarMensagem('mensagem', error.message, true);
-            }
+   <script>
+    async function salvarTarefa(tarefa) {
+        const response = await fetch('http://localhost:3000/tarefas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tarefa)
         });
+        if (!response.ok) {
+            const erro = await response.text();
+            throw new Error('Erro ao cadastrar tarefa: ' + erro);
+        }
+    }
 
-        async function carregarUsuarios() {
-            try {
-                const response = await fetch('http://localhost:3000/usuarios');
-                const usuarios = await response.json();
-                const select = document.getElementById('usuario');
-                select.innerHTML = '';
-                if (!usuarios || usuarios.length === 0) {
+    document.getElementById('formTarefa').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const usuarioSelect = document.getElementById('usuario');
+        if (usuarioSelect.disabled || usuarioSelect.value === '') {
+            mostrarMensagem('mensagem', 'Cadastre um usuário antes de criar tarefas.', true);
+            return;
+        }
+        const descricao = document.getElementById('descricao').value.trim();
+        const nome_setor = document.getElementById('nome_setor').value.trim();
+        const prioridade = document.getElementById('prioridade').value;
+        const usuario_id = Number(usuarioSelect.value); 
+        const status = document.getElementById('status').value;
+
+        if (!descricao || !nome_setor || !prioridade || !usuario_id || !status) {
+            mostrarMensagem('mensagem', 'Preencha todos os campos.', true);
+            return;
+        }
+
+        const tarefa = {
+            descricao,
+            nome_setor,
+            prioridade,
+            usuario_id, 
+            status
+        };
+        console.log('Enviando tarefa:', tarefa); 
+        try {
+            await salvarTarefa(tarefa);
+            mostrarMensagem('mensagem', 'Tarefa cadastrada com sucesso!');
+            e.target.reset();
+        } catch (error) {
+            mostrarMensagem('mensagem', error.message, true);
+        }
+    });
+
+    async function carregarUsuarios() {
+        try {
+            const response = await fetch('http://localhost:3000/usuarios');
+            const usuarios = await response.json();
+            const select = document.getElementById('usuario');
+            select.innerHTML = '';
+            if (!usuarios || usuarios.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.innerText = 'Nenhum usuário cadastrado';
+                select.appendChild(option);
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+                usuarios.forEach((u) => {
                     const option = document.createElement('option');
-                    option.value = '';
-                    option.innerText = 'Nenhum usuário cadastrado';
+                    option.value = u.id; 
+                    option.innerText = u.nome;
                     select.appendChild(option);
-                    select.disabled = true;
-                } else {
-                    select.disabled = false;
-                    usuarios.forEach((u) => {
-                        const option = document.createElement('option');
-                        option.value = u.id;
-                        option.innerText = u.nome;
-                        select.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                mostrarMensagem('mensagem', 'Erro ao carregar usuários.', true);
+                });
             }
+        } catch (error) {
+            mostrarMensagem('mensagem', 'Erro ao carregar usuários.', true);
         }
+    }
 
-        window.onload = carregarUsuarios;
+    window.onload = carregarUsuarios;
 
-        function mostrarMensagem(id, mensagem, erro = false) {
-            const el = document.getElementById(id);
-            el.textContent = mensagem;
-            el.style.color = erro ? 'red' : 'green';
-        }
-    </script>
+    function mostrarMensagem(id, mensagem, erro = false) {
+        const el = document.getElementById(id);
+        el.textContent = mensagem;
+        el.style.color = erro ? 'red' : 'green';
+    }
+</script>
 </body>
 </html>     
